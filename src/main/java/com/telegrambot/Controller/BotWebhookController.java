@@ -1,5 +1,10 @@
 package com.telegrambot.Controller;
 
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +18,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 
 @RestController
 public class BotWebhookController {
+    private static final Logger log = LoggerFactory.getLogger(BotWebhookController.class);
     private final TelegramBot bot;
 
     public BotWebhookController( @Value("${telegram.bot.token}")String botToken){
@@ -34,12 +40,22 @@ public class BotWebhookController {
         }
     }
     @GetMapping("/test")
-    public void test(@RequestParam String msg) {
-        bot.execute(new SendMessage(myChatId, "測試webhook有通！"));
+    public void test() {
+        try {
+            bot.execute(new SendMessage(myChatId, "測試webhook有通！"));
+            log.warn("TEST Webhook PASS！");
+        } catch (Exception e) {
+            log.error("TEST Webhook ERROR : "+e.toString());
+        }
     }
 
     @GetMapping("/chatwebhook")
     public void chatwebhook(@RequestParam String msg) {
-        bot.execute(new SendMessage(myChatId, msg));
+        try {
+            bot.execute(new SendMessage(myChatId, msg));
+            log.warn("Webhook Trigger: "+msg);
+        } catch (Exception e) {
+            log.error("Trigger Webhook ERROR : "+e.toString());
+        }
     }
 }

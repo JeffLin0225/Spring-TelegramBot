@@ -32,3 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 src/main/resources/application.properties
+src/main/resources/application-prod.properties
+src/main/resources/log4j2-prod.xml
+src/main/resources/log4j2.xml

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN"> <Appenders>
+    <Console name="ConsoleAppender" target="SYSTEM_OUT">
+        <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+
+    <Http name="LogglyHttpAppender" url="https://logs-01.loggly.com/inputs/<loggly token>/tag/telegram-bot,java">
+        <PatternLayout charset="UTF-8"> <pattern>%d{yyyy-MM-dd HH:mm:ss,SSS}{GMT} %p %t %c{1.}.%M - %m%n</pattern>
+        </PatternLayout>
+        <ConnectTimeoutMillis>5000</ConnectTimeoutMillis>
+        <ReadTimeoutMillis>10000</ReadTimeoutMillis>
+    </Http>
+
+    <RollingFile name="FileAppender" fileName="logs/telegram-bot.log"
+                 filePattern="logs/telegram-bot-%d{yyyy-MM-dd}.log.gz">
+        <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        <Policies>
+            <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        </Policies>
+        <DefaultRolloverStrategy max="30"/>
+    </RollingFile>
+
+</Appenders>
+
+    <Loggers>
+        <Logger name="com.telegrambot" level="WARN" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="LogglyHttpAppender"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+
+        <Logger name="org.springframework" level="WARN" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="LogglyHttpAppender"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+
+        <Root level="INFO">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="LogglyHttpAppender"/>
+            <AppenderRef ref="FileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>
