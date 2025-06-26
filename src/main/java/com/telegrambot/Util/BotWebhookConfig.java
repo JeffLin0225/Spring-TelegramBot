@@ -1,7 +1,5 @@
-package com.telegrambot;
+package com.telegrambot.Util;
 
-
-import com.telegrambot.Controller.BotWebhookController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
