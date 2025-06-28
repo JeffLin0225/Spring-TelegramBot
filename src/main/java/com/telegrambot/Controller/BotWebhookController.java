@@ -1,7 +1,9 @@
 package com.telegrambot.Controller;
 
+import com.telegrambot.Service.TelegramService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,8 +20,12 @@ public class BotWebhookController {
     private static final Logger log = LoggerFactory.getLogger(BotWebhookController.class);
     private final TelegramBot bot;
 
-    public BotWebhookController( @Value("${telegram.bot.token}")String botToken){
+    @Autowired
+    public TelegramService telegramService;
+
+    public BotWebhookController( @Value("${telegram.bot.token}")String botToken ,TelegramService telegramService ){
         this.bot = new TelegramBot(botToken);
+        this.telegramService = new TelegramService();
     }
 
     @Value("${telegram.bot.mychatid}")
@@ -46,13 +52,15 @@ public class BotWebhookController {
         }
     }
 
-    @GetMapping("/chatwebhook")
-    public void chatwebhook(@RequestParam String msg) {
+    @GetMapping("/sendMessage")
+    public void sendMessage(@RequestParam String msg){
         try {
-            bot.execute(new SendMessage(myChatId, msg));
-            log.warn("Webhook Trigger: "+msg);
-        } catch (Exception e) {
-            log.error("Trigger Webhook ERROR : "+e.toString());
+            telegramService.insertRecord(msg);
+        }catch ( Exception e  ){
+            log.error("(ERROR) Insert Record -> MongoDB : "+e);
+        }finally {
+            bot.execute(new SendMessage(myChatId , msg ));
+            log.warn("(Success) Send -> Telegram : " + msg);
         }
     }
 }
